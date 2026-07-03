@@ -18,9 +18,9 @@ const defaultStyles: CustomizationConfig = {
   secondaryColor: '#10b981', // Emerald
   accentColor: '#f43f5e', // Rose
   backgroundColorLight: '#f8fafc', // Slate 50
-  backgroundColorDark: '#09090b', // Zinc 950
+  backgroundColorDark: '#0a0e1a', // Rich Dark Slate Blue
   cardColorLight: '#ffffff', // White
-  cardColorDark: '#18181b', // Zinc 900
+  cardColorDark: '#111625', // Rich Glass-Slate Card
   borderRadius: '12px',
   fontSans: 'Inter',
   logoText: 'StringToTech',
@@ -45,7 +45,7 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   const [config, setConfig] = useState<CustomizationConfig>(defaultStyles);
 
   useEffect(() => {
-    const saved = localStorage.getItem('stringtotech-customization');
+    const saved = localStorage.getItem('stringtotech-customization-v2');
     if (saved) {
       try {
         setConfig(JSON.parse(saved));
@@ -58,14 +58,14 @@ export const CustomizationProvider: React.FC<{ children: React.ReactNode }> = ({
   const updateConfig = (newConfig: Partial<CustomizationConfig>) => {
     setConfig(prev => {
       const updated = { ...prev, ...newConfig };
-      localStorage.setItem('stringtotech-customization', JSON.stringify(updated));
+      localStorage.setItem('stringtotech-customization-v2', JSON.stringify(updated));
       return updated;
     });
   };
 
   const resetConfig = () => {
     setConfig(defaultStyles);
-    localStorage.setItem('stringtotech-customization', JSON.stringify(defaultStyles));
+    localStorage.setItem('stringtotech-customization-v2', JSON.stringify(defaultStyles));
   };
 
   const saveConfig = () => {

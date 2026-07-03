@@ -7,9 +7,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Blog, Comment } from '../types';
 import { BlockRenderer } from '../components/BlockRenderer';
 import { TableOfContents } from '../components/Article/TableOfContents';
+import { ReadingProgressBar } from '../components/Article/ReadingProgressBar';
 import { 
   Heart, Bookmark, Share2, ArrowLeft, ArrowRight, Sparkles, Calendar, BookOpen, User, 
-  Send, CornerDownRight, MessageSquare, AlertCircle, Check, Copy, Facebook, Twitter, Linkedin, Link, ExternalLink 
+  Send, CornerDownRight, MessageSquare, AlertCircle, Check, Copy, Facebook, Twitter, Linkedin, Link, ExternalLink, Clock 
 } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -46,9 +47,28 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
   const [reportedComments, setReportedComments] = useState<string[]>([]);
   const [linkCopied, setLinkCopied] = useState(false);
 
-  // Scroll to top on load
+  // Scroll to top on load and track scroll percentage for real-time telemetry
+  const [scrollPercent, setScrollPercent] = useState(0);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
+    
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (totalHeight > 0) {
+        const progress = (window.scrollY / totalHeight) * 100;
+        setScrollPercent(Math.round(Math.min(100, Math.max(0, progress))));
+      } else {
+        setScrollPercent(0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, [slug]);
 
   // Find active blog
@@ -97,6 +117,43 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
       next: index < published.length - 1 ? published[index + 1] : null
     };
   }, [blogs, blog]);
+
+  // Dynamic reading time estimate based on actual contents
+  const dynamicReadingStats = useMemo(() => {
+    if (!blog) return { minutes: 0, words: 0 };
+    let totalWords = 0;
+    
+    // Title & subtitle
+    if (blog.title) totalWords += blog.title.split(/\s+/).filter(Boolean).length;
+    if (blog.subtitle) totalWords += blog.subtitle.split(/\s+/).filter(Boolean).length;
+    
+    // Core blocks
+    if (blog.blocks) {
+      blog.blocks.forEach(block => {
+        if (block.content) {
+          totalWords += block.content.split(/\s+/).filter(Boolean).length;
+        }
+        // Table cell contents if available
+        if (block.properties?.rows) {
+          block.properties.rows.forEach(row => {
+            row.forEach(cell => {
+              if (cell) totalWords += cell.split(/\s+/).filter(Boolean).length;
+            });
+          });
+        }
+      });
+    }
+
+    const wpm = 200; // 200 words per minute average for technical reading
+    const minutes = Math.max(1, Math.round(totalWords / wpm));
+    return { minutes, words: totalWords };
+  }, [blog]);
+
+  const estimatedCompletionTime = useMemo(() => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + dynamicReadingStats.minutes);
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }, [dynamicReadingStats.minutes]);
 
   const handleShareClick = (platform: string) => {
     setLinkCopied(true);
@@ -150,20 +207,15 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
   }
 
   return (
-    <div className="pb-24 font-custom">
-      {/* 1. Reading Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1 bg-zinc-100 dark:bg-zinc-900 z-50">
-        <motion.div 
-          className="h-full bg-primary" 
-          initial={{ width: '0%' }}
-          animate={{ width: '100%' }}
-          transition={{ duration: 0.5 }}
-          style={{
-            originX: 0,
-            scaleX: 0.3 // Custom scale factor simulation or standard binding handled at container scroll
-          }}
-        />
+    <div className="pb-24 font-custom relative">
+      {/* Immersive ambient glows specifically optimized for comfortable long reading sessions */}
+      <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none overflow-hidden opacity-30 dark:opacity-40 -z-10" aria-hidden="true">
+        <div className="absolute top-[10%] left-[-20%] w-[500px] h-[500px] rounded-full bg-violet-600/15 blur-[120px]" />
+        <div className="absolute top-[30%] right-[-20%] w-[500px] h-[500px] rounded-full bg-cyan-600/15 blur-[120px]" />
       </div>
+
+      {/* Dynamic Reading Progress Bar */}
+      <ReadingProgressBar />
 
       <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
         {/* Breadcrumbs */}
@@ -202,10 +254,39 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
             {blog.subtitle}
           </p>
 
-          <div className="flex flex-wrap items-center gap-6 text-sm text-slate-500 dark:text-zinc-400 pt-2">
-            <span className="flex items-center gap-1.5"><User size={16} className="text-primary" /> {blog.author.name}</span>
-            <span className="flex items-center gap-1.5"><Calendar size={16} className="text-secondary" /> {formatDate(blog.publishedAt)}</span>
-            <span className="flex items-center gap-1.5"><BookOpen size={16} className="text-accent" /> {blog.metrics.readingTime} min read</span>
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-150 dark:border-zinc-800/80 mt-6">
+            <div className="flex flex-wrap items-center gap-6 text-sm text-slate-500 dark:text-zinc-400">
+              <span className="flex items-center gap-1.5"><User size={16} className="text-primary" /> {blog.author.name}</span>
+              <span className="flex items-center gap-1.5"><Calendar size={16} className="text-secondary" /> {formatDate(blog.publishedAt)}</span>
+              <span className="flex items-center gap-1.5" title={`${dynamicReadingStats.words} words in this article`}>
+                <BookOpen size={16} className="text-accent" /> 
+                <span className="font-semibold text-slate-800 dark:text-zinc-100">{dynamicReadingStats.minutes} min read</span>
+                <span className="text-xs text-slate-400 dark:text-zinc-500 font-mono">({dynamicReadingStats.words} words)</span>
+              </span>
+              <span className="flex items-center gap-1.5" title={`Estimated time you will finish reading this article if you start now`}>
+                <Clock size={16} className="text-emerald-500 animate-pulse" /> 
+                <span className="font-semibold text-slate-800 dark:text-zinc-100">Finish by {estimatedCompletionTime}</span>
+              </span>
+            </div>
+
+            <button
+              id="header-copy-link-button"
+              onClick={() => handleShareClick('copy')}
+              className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-bold bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-800 hover:bg-primary/5 hover:text-primary hover:border-primary/20 rounded-xl cursor-pointer transition-all active:scale-95"
+              title="Copy link to clipboard"
+            >
+              {linkCopied ? (
+                <>
+                  <Check size={14} className="text-emerald-500 animate-pulse" />
+                  <span className="text-emerald-500">Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Link size={14} />
+                  <span>Copy Link</span>
+                </>
+              )}
+            </button>
           </div>
         </header>
 
@@ -213,7 +294,7 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
         <div className="grid lg:grid-cols-12 gap-12 items-start">
           
           {/* Left Main Article Content */}
-          <section className="lg:col-span-8 space-y-12">
+          <section className="lg:col-span-8 space-y-12 max-w-4xl">
             
             {/* Banner Cover Image */}
             <div className="rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-md aspect-video bg-zinc-100 dark:bg-zinc-900 relative">
@@ -322,7 +403,7 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
               </div>
 
               {/* Form: Post Comments */}
-              <form onSubmit={handleCommentSubmit} className="space-y-4 p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm">
+              <form onSubmit={handleCommentSubmit} className="space-y-4 p-6 rounded-2xl bg-white/70 dark:bg-[var(--card-dark)]/50 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/40 shadow-[0_8px_30px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)]">
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Share Your Technical Thoughts</h4>
                 <div className="grid md:grid-cols-2 gap-4">
                   <input 
@@ -365,7 +446,7 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
                     const replies = getRepliesForComment(comment.id);
                     const isReported = reportedComments.includes(comment.id);
                     return (
-                      <div key={comment.id} className="space-y-5 p-5 rounded-2xl bg-zinc-55/40 dark:bg-zinc-900/10 border border-zinc-150 dark:border-zinc-800/40 shadow-sm">
+                      <div key={comment.id} className="space-y-5 p-5 rounded-2xl bg-white/30 dark:bg-[var(--card-dark)]/25 backdrop-blur-md border border-zinc-150/50 dark:border-zinc-800/40 shadow-[0_4px_20px_rgba(0,0,0,0.01)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.15)]">
                         
                         {/* Parent Comment */}
                         <div className="space-y-2">
@@ -410,7 +491,7 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
 
                         {/* Reply Form (Conditional) */}
                         {replyingToId === comment.id && (
-                          <form onSubmit={(e) => handleReplySubmit(e, comment.id)} className="space-y-3 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 ml-4">
+                          <form onSubmit={(e) => handleReplySubmit(e, comment.id)} className="space-y-3 p-4 rounded-xl border border-zinc-200/50 dark:border-zinc-800/40 bg-white/50 dark:bg-[var(--card-dark)]/40 backdrop-blur-md ml-4">
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Write reply to {comment.authorName}</span>
                             <div className="grid grid-cols-2 gap-3">
                               <input 
@@ -485,18 +566,63 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
           <aside className="lg:col-span-4 hidden lg:block">
             <div className="sticky top-24 space-y-8">
               
+              {/* Reader Telemetry & Stats Card */}
+              <div className="p-6 rounded-2xl bg-white/70 dark:bg-[var(--card-dark)]/50 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/40 shadow-[0_8px_30px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] space-y-5 hover:shadow-[0_8px_30px_rgba(99,102,241,0.06)] transition-all duration-300 text-left">
+                <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-850 pb-2">
+                  <Clock size={14} className="text-primary" />
+                  <h4 className="text-xs font-bold uppercase tracking-widest text-slate-800 dark:text-zinc-200">
+                    Reader Telemetry
+                  </h4>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between text-xs">
+                     <span className="text-slate-500 dark:text-zinc-400">Reading Progress</span>
+                     <span className="font-mono font-bold text-primary">{scrollPercent}%</span>
+                  </div>
+
+                  {/* Progress Tracker bar */}
+                  <div className="h-2 w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-zinc-200/20">
+                    <div 
+                      className="h-full rounded-full bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 transition-all duration-300"
+                      style={{ width: `${scrollPercent}%` }}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 pt-2">
+                    <div className="p-3 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-850/60">
+                      <span className="block text-[9px] uppercase font-bold text-slate-400 mb-1">Time Left</span>
+                      <span className="font-mono text-sm font-bold text-slate-800 dark:text-zinc-200">
+                        {Math.max(1, Math.round(dynamicReadingStats.minutes * (1 - scrollPercent / 100)))} min
+                      </span>
+                    </div>
+                    <div className="p-3 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/40 border border-zinc-100 dark:border-zinc-850/60">
+                      <span className="block text-[9px] uppercase font-bold text-slate-400 mb-1">Finish At</span>
+                      <span className="font-mono text-sm font-bold text-slate-800 dark:text-zinc-200">
+                        {estimatedCompletionTime}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-mono pt-1">
+                    <span>{dynamicReadingStats.words} words</span>
+                    <span>200 WPM pacing</span>
+                  </div>
+                </div>
+              </div>
+
               {/* Table of Contents card */}
-              <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-6">
+              <div className="p-6 rounded-2xl bg-white/70 dark:bg-[var(--card-dark)]/50 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/40 shadow-[0_8px_30px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] space-y-6 hover:shadow-[0_8px_30px_rgba(99,102,241,0.06)] transition-all duration-300">
                 <TableOfContents blocks={blog.blocks} />
               </div>
 
               {/* Author bio overview */}
-              <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
+              <div className="p-6 rounded-2xl bg-white/70 dark:bg-[var(--card-dark)]/50 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/40 shadow-[0_8px_30px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] space-y-4 hover:shadow-[0_8px_30px_rgba(99,102,241,0.06)] transition-all duration-300">
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-zinc-50 dark:border-zinc-850/60 pb-1">Author Identity</h4>
                 <div className="flex items-center gap-3">
                   <img src={blog.author.avatar} alt={blog.author.name} className="w-12 h-12 rounded-full object-cover border" referrerPolicy="no-referrer" />
                   <div>
-                    <h5 className="text-xs font-bold text-slate-800 dark:text-zinc-100 leading-none">{blog.author.name}</h5>
+                    <h5 className="text-xs font-bold text-slate-880 dark:text-zinc-100 leading-none">{blog.author.name}</h5>
                     <span className="text-[10px] text-slate-400">{blog.author.role}</span>
                   </div>
                 </div>
@@ -511,7 +637,7 @@ export const BlogDetail: React.FC<BlogDetailProps> = ({
 
               {/* Related posts */}
               {relatedBlogs.length > 0 && (
-                <div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
+                <div className="p-6 rounded-2xl bg-white/70 dark:bg-[var(--card-dark)]/50 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/40 shadow-[0_8px_30px_rgba(0,0,0,0.02)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] space-y-4 hover:shadow-[0_8px_30px_rgba(99,102,241,0.06)] transition-all duration-300">
                   <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-zinc-50 dark:border-zinc-850/60 pb-1">Related Architectural Logs</h4>
                   <div className="space-y-4.5">
                     {relatedBlogs.map((rel) => (

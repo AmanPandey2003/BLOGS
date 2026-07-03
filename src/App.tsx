@@ -12,6 +12,8 @@ import { AdminEditor } from './pages/AdminEditor';
 import { Contact } from './pages/Contact';
 import { AuthorProfile } from './pages/AuthorProfile';
 import { BookmarksHistory } from './pages/BookmarksHistory';
+import { LearningJourney } from './pages/LearningJourney';
+import { TopicExplorer } from './pages/TopicExplorer';
 import { AdminAuthGate } from './components/AdminAuthGate';
 import { PostCreationSuccess } from './pages/PostCreationSuccess';
 import { CustomizationProvider, useCustomization } from './contexts/CustomizationContext';
@@ -19,9 +21,11 @@ import { INITIAL_BLOGS, INITIAL_COMMENTS, INITIAL_SUBSCRIBERS } from './data/moc
 import { Blog, Comment, Subscriber, ReadingHistoryItem } from './types';
 import { 
   Sun, Moon, ShieldAlert, Cpu, Award, Globe, MessageSquare, BookOpen, Clock, 
-  ArrowUp, Menu, X, ArrowRight, Github, Twitter, Linkedin, Sparkles, Settings, UserCheck
+  ArrowUp, Menu, X, ArrowRight, Github, Twitter, Linkedin, Sparkles, Settings, UserCheck,
+  Heart, Send, Quote, Terminal, ExternalLink, Mail, Check, Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { InteractiveCursor, Magnetic } from './components/InteractiveCursor';
 
 const AppContent: React.FC = () => {
   const { config } = useCustomization();
@@ -29,6 +33,9 @@ const AppContent: React.FC = () => {
   // Local state managers
   const [currentPage, setCurrentPage] = useState<string>('home');
   const [currentSlug, setCurrentSlug] = useState<string | null>(null);
+
+  const [footerEmail, setFooterEmail] = useState('');
+  const [footerSubscribed, setFooterSubscribed] = useState(false);
   
   // Database mock states stored locally so they persist between views
   const [blogs, setBlogs] = useState<Blog[]>(() => {
@@ -105,6 +112,60 @@ const AppContent: React.FC = () => {
     }
   });
 
+  // Dynamic live-calculated traffic history
+  const [trafficHistory, setTrafficHistory] = useState(() => {
+    try {
+      const saved = localStorage.getItem('stringtotech_traffic_history_v2');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error("Failed to parse traffic history", e);
+    }
+    return [
+      { name: 'Mon', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Tue', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Wed', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Thu', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Fri', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Sat', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Sun', views: 0, subscribers: 0, comments: 0 }
+    ];
+  });
+
+  const recordTelemetry = (type: 'views' | 'subscribers' | 'comments', amount = 1) => {
+    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const currentDayName = daysOfWeek[new Date().getDay()];
+    
+    setTrafficHistory((prev: any[]) => {
+      const updated = prev.map(item => {
+        if (item.name === currentDayName) {
+          return {
+            ...item,
+            [type]: (item[type] || 0) + amount
+          };
+        }
+        return item;
+      });
+      localStorage.setItem('stringtotech_traffic_history_v2', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleResetTraffic = () => {
+    const cleared = [
+      { name: 'Mon', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Tue', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Wed', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Thu', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Fri', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Sat', views: 0, subscribers: 0, comments: 0 },
+      { name: 'Sun', views: 0, subscribers: 0, comments: 0 }
+    ];
+    setTrafficHistory(cleared);
+    localStorage.setItem('stringtotech_traffic_history_v2', JSON.stringify(cleared));
+  };
+
   // Track initial page load and increment views
   useEffect(() => {
     setPageViews(prev => {
@@ -112,6 +173,7 @@ const AppContent: React.FC = () => {
       localStorage.setItem('stringtotech_pageviews_v3', next.toString());
       return next;
     });
+    recordTelemetry('views', 1);
   }, []);
 
   // Back to Top button trigger
@@ -187,6 +249,7 @@ const AppContent: React.FC = () => {
       localStorage.setItem('stringtotech_pageviews_v3', next.toString());
       return next;
     });
+    recordTelemetry('views', 1);
 
     if (slug) {
       setCurrentSlug(slug);
@@ -278,10 +341,11 @@ const AppContent: React.FC = () => {
       authorEmail,
       content,
       likes: 0,
-      isApproved: true, // Auto-approve for preview sandbox
+      isApproved: true, // Auto-approve for sandbox env
       createdAt: new Date().toISOString()
     };
     setComments(prev => [newComment, ...prev]);
+    recordTelemetry('comments', 1);
   };
 
   const handleLikeComment = (commentId: string) => {
@@ -325,8 +389,25 @@ const AppContent: React.FC = () => {
       joinedAt: new Date().toISOString()
     };
     setSubscribers(prev => [newSub, ...prev]);
+    recordTelemetry('subscribers', 1);
     return true;
   };
+
+  const handleFooterSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!footerEmail || !footerEmail.includes('@')) return;
+    handleSubscribe(footerEmail);
+    setFooterSubscribed(true);
+    setFooterEmail('');
+    setTimeout(() => setFooterSubscribed(false), 5000);
+  };
+
+  const footerBlogs = useMemo(() => {
+    return [...blogs]
+      .filter(b => b.isPublished)
+      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+      .slice(0, 2);
+  }, [blogs]);
 
   const handleImportSubscribers = (emails: string[]) => {
     const newSubs = emails
@@ -338,6 +419,7 @@ const AppContent: React.FC = () => {
         joinedAt: new Date().toISOString()
       }));
     setSubscribers(prev => [...newSubs, ...prev]);
+    recordTelemetry('subscribers', newSubs.length);
   };
 
   const handleCookieAccept = () => {
@@ -348,10 +430,13 @@ const AppContent: React.FC = () => {
   return (
     <div 
       className={`min-h-screen flex flex-col justify-between overflow-x-hidden relative ${
-        theme === 'dark' ? 'bg-zinc-950 text-zinc-100' : 'bg-slate-50 text-slate-900 grid-bg-light'
+        theme === 'dark' ? 'bg-[var(--bg-dark)] text-zinc-100' : 'bg-slate-50 text-slate-900 grid-bg-light'
       }`}
       style={{ fontFamily: config.fontSans, borderRadius: config.borderRadius }}
     >
+      {/* Subtle cursor interactions (glowing cursor + particle trails) */}
+      <InteractiveCursor theme={theme} />
+
       {/* Premium Dark Mode Wallpaper Background Components */}
       {theme === 'dark' && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
@@ -395,7 +480,7 @@ const AppContent: React.FC = () => {
       {/* 1. Navbar */}
       <nav className={`sticky top-0 z-40 border-b transition-all duration-300 ${
         theme === 'dark' 
-          ? 'bg-zinc-950/80 border-zinc-900/60' 
+          ? 'bg-[var(--bg-dark)]/80 border-zinc-900/40' 
           : 'bg-white/85 border-zinc-150'
       } backdrop-blur-md`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -446,6 +531,26 @@ const AppContent: React.FC = () => {
               Saved Logs
             </button>
             <button 
+              onClick={() => navigateTo('learning-journey')} 
+              className={`px-3 py-2 rounded-xl cursor-pointer transition-all ${
+                currentPage === 'learning-journey' 
+                  ? 'bg-violet-600/10 text-violet-600 dark:bg-violet-600/15' 
+                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-slate-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              My Journey
+            </button>
+            <button 
+              onClick={() => navigateTo('topic-explorer')} 
+              className={`px-3 py-2 rounded-xl cursor-pointer transition-all ${
+                currentPage === 'topic-explorer' 
+                  ? 'bg-primary/10 text-primary dark:bg-primary/15' 
+                  : 'hover:bg-zinc-100 dark:hover:bg-zinc-900/60 hover:text-slate-900 dark:hover:text-zinc-200'
+              }`}
+            >
+              Topic Explorer
+            </button>
+            <button 
               onClick={() => navigateTo('contact')} 
               className={`px-3 py-2 rounded-xl cursor-pointer transition-all ${
                 currentPage === 'contact' 
@@ -482,13 +587,15 @@ const AppContent: React.FC = () => {
  
           {/* Actions: Theme Toggle & Mobile trigger */}
           <div className="flex items-center gap-3">
-            <button 
-              onClick={toggleTheme} 
-              className="p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 cursor-pointer transition-all text-slate-500 dark:text-zinc-400 hover:scale-105 active:scale-95"
-              title={theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
-            >
-              {theme === 'dark' ? <Sun size={14} className="animate-pulse" /> : <Moon size={14} />}
-            </button>
+            <Magnetic strength={0.35}>
+              <button 
+                onClick={toggleTheme} 
+                className="p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/40 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 cursor-pointer transition-all text-slate-500 dark:text-zinc-400 hover:scale-105 active:scale-95"
+                title={theme === 'dark' ? 'Light Theme' : 'Dark Theme'}
+              >
+                {theme === 'dark' ? <Sun size={14} className="animate-pulse" /> : <Moon size={14} />}
+              </button>
+            </Magnetic>
 
             {/* Mobile menu trigger */}
             <button 
@@ -507,11 +614,13 @@ const AppContent: React.FC = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-zinc-100 dark:border-zinc-900 bg-white dark:bg-zinc-950 px-4 py-6 space-y-4 text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-zinc-300"
+              className="md:hidden border-t border-zinc-100 dark:border-zinc-900 bg-white dark:bg-[var(--bg-dark)] px-4 py-6 space-y-4 text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-zinc-300"
             >
               <button onClick={() => navigateTo('home')} className="block hover:text-primary w-full text-left py-1.5 border-b border-zinc-50 dark:border-zinc-900/40">Feed</button>
               <button onClick={() => navigateTo('author')} className="block hover:text-primary w-full text-left py-1.5 border-b border-zinc-50 dark:border-zinc-900/40">Authors</button>
               <button onClick={() => navigateTo('bookmarks-history')} className="block hover:text-primary w-full text-left py-1.5 border-b border-zinc-50 dark:border-zinc-900/40">Saved Logs</button>
+              <button onClick={() => navigateTo('learning-journey')} className="block hover:text-primary w-full text-left py-1.5 border-b border-zinc-50 dark:border-zinc-900/40">My Journey</button>
+              <button onClick={() => navigateTo('topic-explorer')} className="block hover:text-primary w-full text-left py-1.5 border-b border-zinc-50 dark:border-zinc-900/40">Topic Explorer</button>
               <button onClick={() => navigateTo('contact')} className="block hover:text-primary w-full text-left py-1.5 border-b border-zinc-50 dark:border-zinc-900/40">Contact</button>
               <button onClick={() => navigateTo('admin')} className="block hover:text-primary w-full text-left py-1.5 border-b border-zinc-50 dark:border-zinc-900/40 text-emerald-500">Platform Console</button>
               <button onClick={() => navigateTo('admin-customize')} className="block hover:text-primary w-full text-left py-1.5 text-accent">Branding Customizer</button>
@@ -539,6 +648,8 @@ const AppContent: React.FC = () => {
                 onApproveComment={handleApproveComment}
                 onDeleteComment={handleDeleteComment}
                 onImportSubscribers={handleImportSubscribers}
+                trafficHistory={trafficHistory}
+                onResetTraffic={handleResetTraffic}
               />
             )}
 
@@ -618,85 +729,234 @@ const AppContent: React.FC = () => {
             onNavigate={navigateTo}
           />
         )}
+
+        {currentPage === 'learning-journey' && (
+          <LearningJourney />
+        )}
+
+        {currentPage === 'topic-explorer' && (
+          <TopicExplorer />
+        )}
       </main>
 
       {/* 3. Footer */}
-      <footer className={`border-t py-16 transition-all duration-300 ${
+      <footer className={`transition-all duration-500 relative border-t-0 overflow-hidden ${
         theme === 'dark' 
-          ? 'bg-zinc-950 border-zinc-900' 
-          : 'bg-white border-zinc-200'
+          ? 'bg-gradient-to-b from-[var(--bg-dark)] via-[#0f1424] to-[#070a14] border-zinc-900/40 text-zinc-100' 
+          : 'bg-gradient-to-b from-slate-50 via-zinc-100 to-zinc-200 border-zinc-200 text-slate-900'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8 pb-12 border-b border-zinc-100 dark:border-zinc-900">
+        {/* Animated premium glow divider at the very top of footer */}
+        <div className="w-full h-[2.5px] bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-500 animate-pulse opacity-85" />
+
+        {/* Dynamic spot glows behind contents */}
+        <div className="absolute top-1/4 right-1/4 w-[350px] h-[350px] rounded-full bg-violet-600/5 dark:bg-violet-600/10 blur-[110px] -z-10 pointer-events-none" />
+        <div className="absolute bottom-10 left-1/4 w-[350px] h-[350px] rounded-full bg-cyan-600/5 dark:bg-cyan-600/10 blur-[110px] -z-10 pointer-events-none" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-zinc-100/30 dark:border-zinc-900/40 relative z-10">
           
-          {/* Brand Col */}
-          <div className="space-y-4 col-span-2 md:col-span-1">
-            <div className="flex items-center gap-2 cursor-pointer font-custom" onClick={() => navigateTo('home')}>
-              <div className="w-6 h-6 rounded bg-primary flex items-center justify-center text-white font-black text-xs">
+          {/* Brand Col & Personal Quote */}
+          <div className="space-y-6 lg:col-span-2">
+            <div className="flex items-center gap-2.5 cursor-pointer font-custom" onClick={() => navigateTo('home')}>
+              <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-violet-600 to-fuchsia-500 flex items-center justify-center text-white font-black text-sm shadow-[0_0_15px_rgba(168,85,247,0.4)]">
                 S
               </div>
-              <span className="font-extrabold tracking-tight text-sm">
+              <span className="font-extrabold tracking-tight text-base bg-clip-text text-transparent bg-gradient-to-r from-slate-950 via-slate-800 to-slate-900 dark:from-white dark:via-zinc-100 dark:to-zinc-200">
                 StringToTech
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-light leading-relaxed">
-              Turning complex technology and distributed system engineering into simple, searchable knowledge.
-            </p>
-          </div>
+            
+            {/* Elegant personal quote card */}
+            <div className="relative p-5 rounded-2xl bg-white/45 dark:bg-zinc-950/45 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm space-y-3">
+              <Quote size={24} className="text-violet-500/20 dark:text-violet-400/20 absolute -top-3 -left-1" />
+              <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-relaxed font-light italic select-none">
+                "Code is the architecture of thought made executable. Let's design with intent, optimize with passion, and build with empathy."
+              </p>
+              <div className="flex items-center gap-2 pt-1 border-t border-zinc-100/50 dark:border-zinc-800/30">
+                <div className="w-5 h-5 rounded-full overflow-hidden bg-zinc-200 shrink-0">
+                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Lead Architect" className="w-full h-full object-cover" />
+                </div>
+                <div className="leading-none">
+                  <span className="block text-[9px] font-bold text-slate-700 dark:text-zinc-300">Aman Pandey</span>
+                  <span className="text-[8px] text-slate-400">Lead Architect & Developer</span>
+                </div>
+              </div>
+            </div>
 
-          {/* Sitemap Col: Explore */}
-          <div className="space-y-3.5">
-            <h5 className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Explore Feed</h5>
-            <div className="flex flex-col gap-2 text-xs font-semibold text-slate-500 dark:text-zinc-400">
-              <button onClick={() => navigateTo('home')} className="hover:text-primary text-left cursor-pointer">Architecture</button>
-              <button onClick={() => navigateTo('home')} className="hover:text-primary text-left cursor-pointer">Performance</button>
-              <button onClick={() => navigateTo('home')} className="hover:text-primary text-left cursor-pointer">Algorithms</button>
-              <button onClick={() => navigateTo('home')} className="hover:text-primary text-left cursor-pointer">Compilers</button>
+            {/* Social Links with soft glow on hover */}
+            <div className="flex gap-2.5 pt-2">
+              <a 
+                href="https://github.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-violet-600 dark:hover:bg-violet-600 border border-zinc-200/50 dark:border-zinc-800/40 text-slate-500 dark:text-zinc-400 hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-110 hover:shadow-[0_4px_12px_rgba(139,92,246,0.25)]"
+                title="GitHub Repository"
+              >
+                <Github size={15} />
+              </a>
+              <a 
+                href="https://twitter.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-sky-500 dark:hover:bg-sky-500 border border-zinc-200/50 dark:border-zinc-800/40 text-slate-500 dark:text-zinc-400 hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-110 hover:shadow-[0_4px_12px_rgba(14,165,233,0.25)]"
+                title="Twitter Dispatch"
+              >
+                <Twitter size={15} />
+              </a>
+              <a 
+                href="https://linkedin.com" 
+                target="_blank" 
+                rel="noreferrer" 
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-blue-600 dark:hover:bg-blue-600 border border-zinc-200/50 dark:border-zinc-800/40 text-slate-500 dark:text-zinc-400 hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-110 hover:shadow-[0_4px_12px_rgba(37,99,235,0.25)]"
+                title="LinkedIn Network"
+              >
+                <Linkedin size={15} />
+              </a>
+              <button 
+                onClick={() => navigateTo('contact')}
+                className="w-9 h-9 flex items-center justify-center rounded-xl bg-zinc-100/80 dark:bg-zinc-900/80 hover:bg-emerald-600 dark:hover:bg-emerald-600 border border-zinc-200/50 dark:border-zinc-800/40 text-slate-500 dark:text-zinc-400 hover:text-white dark:hover:text-white transition-all duration-300 hover:scale-110 hover:shadow-[0_4px_12px_rgba(16,185,129,0.25)] cursor-pointer"
+                title="Email Support Desk"
+              >
+                <Mail size={15} />
+              </button>
             </div>
           </div>
 
-          {/* Sitemap Col: Platform */}
-          <div className="space-y-3.5">
-            <h5 className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Identity</h5>
-            <div className="flex flex-col gap-2 text-xs font-semibold text-slate-500 dark:text-zinc-400">
-              <button onClick={() => navigateTo('author')} className="hover:text-primary text-left cursor-pointer">Our Authors</button>
-              <button onClick={() => navigateTo('bookmarks-history')} className="hover:text-primary text-left cursor-pointer">Bookmarks</button>
-              <button onClick={() => navigateTo('contact')} className="hover:text-primary text-left cursor-pointer">Security Desk</button>
-              <button onClick={() => navigateTo('contact')} className="hover:text-primary text-left cursor-pointer">Partner With Us</button>
+          {/* Sitemap Col: Explore & Platform combined */}
+          <div className="space-y-4">
+            <h5 className="text-[10px] uppercase font-bold tracking-widest text-slate-400/80 dark:text-zinc-500 flex items-center gap-1">
+              <Terminal size={10} className="text-violet-500" /> Sitemap
+            </h5>
+            <div className="flex flex-col gap-2.5 text-xs font-semibold text-slate-600 dark:text-zinc-400">
+              <button onClick={() => navigateTo('home')} className="hover:text-primary hover:translate-x-1 transition-all text-left cursor-pointer flex items-center gap-1.5 group">
+                <span className="w-1 h-1 rounded-full bg-violet-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Latest Feed
+              </button>
+              <button onClick={() => navigateTo('author')} className="hover:text-primary hover:translate-x-1 transition-all text-left cursor-pointer flex items-center gap-1.5 group">
+                <span className="w-1 h-1 rounded-full bg-violet-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Our Authors
+              </button>
+              <button onClick={() => navigateTo('bookmarks-history')} className="hover:text-primary hover:translate-x-1 transition-all text-left cursor-pointer flex items-center gap-1.5 group">
+                <span className="w-1 h-1 rounded-full bg-violet-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Bookmark Vault
+              </button>
+              <button onClick={() => navigateTo('learning-journey')} className="hover:text-primary hover:translate-x-1 transition-all text-left cursor-pointer flex items-center gap-1.5 group">
+                <span className="w-1 h-1 rounded-full bg-violet-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Learning Journey
+              </button>
+              <button onClick={() => navigateTo('contact')} className="hover:text-primary hover:translate-x-1 transition-all text-left cursor-pointer flex items-center gap-1.5 group">
+                <span className="w-1 h-1 rounded-full bg-violet-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Security Desk
+              </button>
+              <button onClick={() => navigateTo('admin')} className="hover:text-primary hover:translate-x-1 transition-all text-left cursor-pointer flex items-center gap-1.5 group">
+                <span className="w-1 h-1 rounded-full bg-violet-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                Manage Console
+              </button>
             </div>
           </div>
 
-          {/* Sitemap Col: Console */}
-          <div className="space-y-3.5">
-            <h5 className="text-[10px] uppercase font-bold tracking-widest text-slate-400">Developer Desk</h5>
-            <div className="flex flex-col gap-2 text-xs font-semibold text-slate-500 dark:text-zinc-400">
-              <button onClick={() => navigateTo('admin')} className="hover:text-primary text-left cursor-pointer flex items-center gap-1"><Cpu size={12} /> Manage Console</button>
-              <button onClick={() => navigateTo('admin-customize')} className="hover:text-primary text-left cursor-pointer flex items-center gap-1"><Settings size={12} /> Customizer</button>
-              <button onClick={() => navigateTo('admin-editor')} className="hover:text-primary text-left cursor-pointer flex items-center gap-1"><Sparkles size={12} /> New Draft</button>
+          {/* Latest Blogs Column */}
+          <div className="space-y-4 col-span-1">
+            <h5 className="text-[10px] uppercase font-bold tracking-widest text-slate-400/80 dark:text-zinc-500 flex items-center gap-1">
+              <BookOpen size={10} className="text-fuchsia-500" /> Architectural Logs
+            </h5>
+            <div className="space-y-3">
+              {footerBlogs.map((b) => (
+                <div 
+                  key={b.id} 
+                  onClick={() => navigateTo('blog-detail', b.slug)}
+                  className="flex items-center gap-3 cursor-pointer group hover:bg-zinc-100/40 dark:hover:bg-zinc-950/40 p-1.5 rounded-xl border border-transparent hover:border-zinc-200/30 dark:hover:border-zinc-800/30 transition-all duration-300"
+                >
+                  <div className="w-11 h-11 rounded-lg overflow-hidden bg-zinc-200 shrink-0 border border-zinc-100 dark:border-zinc-800 relative">
+                    <img src={b.coverImage} alt={b.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                  <div className="min-w-0 flex-grow">
+                    <h6 className="text-[11px] font-extrabold text-slate-800 dark:text-zinc-200 leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                      {b.title}
+                    </h6>
+                    <span className="text-[9px] text-slate-400 dark:text-zinc-500 font-mono mt-0.5 block flex items-center gap-1 uppercase">
+                      {b.metrics.readingTime} min • {b.category}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+
+          {/* Newsletter Column */}
+          <div className="space-y-4">
+            <h5 className="text-[10px] uppercase font-bold tracking-widest text-slate-400/80 dark:text-zinc-500 flex items-center gap-1">
+              <Sparkles size={10} className="text-cyan-500" /> Newsletter
+            </h5>
+            <div className="p-5 rounded-2xl bg-white/40 dark:bg-zinc-950/40 backdrop-blur-md border border-zinc-200/50 dark:border-zinc-800/40 shadow-sm space-y-4">
+              <div className="space-y-1">
+                <span className="block text-[11px] font-bold text-slate-800 dark:text-zinc-200 leading-tight">Architectural Dispatch</span>
+                <span className="block text-[9px] text-slate-400 dark:text-zinc-500 leading-relaxed font-light">Get raw distributed systems and compiler wisdom sent weekly. No spam.</span>
+              </div>
+
+              <form onSubmit={handleFooterSubscribe} className="space-y-2 relative">
+                <div className="relative">
+                  <input 
+                    type="email" 
+                    value={footerEmail}
+                    onChange={(e) => setFooterEmail(e.target.value)}
+                    placeholder="Enter email address" 
+                    required
+                    className="w-full pl-3 pr-8 py-2.5 text-xs rounded-xl bg-white/60 dark:bg-zinc-900/60 border border-zinc-200/50 dark:border-zinc-800/40 focus:border-violet-500 dark:focus:border-violet-500 outline-none transition-all text-slate-800 dark:text-zinc-200 placeholder-slate-400 dark:placeholder-zinc-600 shadow-inner"
+                  />
+                  <button 
+                    type="submit"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-tr from-violet-600 to-fuchsia-500 text-white rounded-lg hover:shadow-md cursor-pointer transition-all duration-300"
+                    title="Subscribe"
+                  >
+                    <Send size={11} />
+                  </button>
+                </div>
+                
+                <AnimatePresence>
+                  {footerSubscribed && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 5 }}
+                      className="absolute -bottom-8 left-0 right-0 text-center flex items-center justify-center gap-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/5 py-1 rounded-lg border border-emerald-500/15"
+                    >
+                      <Check size={10} /> Consensus accepted! Weekly logs sent.
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </form>
+            </div>
+          </div>
+
         </div>
 
         {/* Lower Credits bar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-400 select-none">
-          <span>&copy; {new Date().getFullYear()} StringToTech Platform. All Written Material Licensed Apache 2.0.</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-400/80 dark:text-zinc-500/80 select-none relative z-10 font-mono">
+          <span className="flex items-center gap-1 flex-wrap justify-center text-center">
+            &copy; {new Date().getFullYear()} StringToTech Platform. Licensed Apache 2.0. Crafted with <Heart size={10} className="text-rose-500 fill-rose-500 animate-pulse inline-block" /> for engineers worldwide.
+          </span>
           
-          <div className="flex gap-4">
-            <a href="https://github.com" target="_blank" rel="noreferrer" className="hover:text-primary"><Github size={12} /></a>
-            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="hover:text-primary"><Twitter size={12} /></a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-primary"><Linkedin size={12} /></a>
+          <div className="flex gap-4 items-center">
+            <span className="text-[9px] text-slate-400 dark:text-zinc-600 uppercase tracking-widest bg-zinc-100/50 dark:bg-zinc-900/50 border border-zinc-200/20 dark:border-zinc-800/20 px-2 py-0.5 rounded-md">
+              Telemetry Active: {pageViews} logs
+            </span>
           </div>
         </div>
       </footer>
 
       {/* Floating: Back to Top Button */}
       {showBackToTop && (
-        <button 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-6 right-6 p-3 bg-primary text-white rounded-full shadow-lg hover:scale-105 transition-all z-40 cursor-pointer"
-          title="Back To Top"
-        >
-          <ArrowUp size={16} />
-        </button>
+        <div className="fixed bottom-6 right-6 z-40">
+          <Magnetic strength={0.45}>
+            <button 
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="p-3 bg-primary text-white rounded-full shadow-lg hover:scale-105 transition-all cursor-pointer"
+              title="Back To Top"
+            >
+              <ArrowUp size={16} />
+            </button>
+          </Magnetic>
+        </div>
       )}
 
       {/* Floating: Cookie Consent Banner */}

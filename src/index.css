@@ -147,3 +147,34 @@ body {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(63, 63, 70, 0.6);
 }
+
+@keyframes textShine {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+.animate-text-shimmer {
+  background-size: 200% auto;
+  animation: textShine 8s linear infinite;
+}
+
+@keyframes marquee-ltr {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-ltr {
+  display: flex;
+  width: max-content;
+  animation: marquee-ltr 25s linear infinite;
+}
+
+.animate-marquee-ltr:hover {
+  animation-play-state: paused;
+}
+

@@ -130,13 +130,13 @@ export const INITIAL_SUBSCRIBERS: Subscriber[] = [];
 
 // Seed stats for Recharts
 export const ANALYTICS_VIEWS_HISTORY = [
-  { name: 'Mon', views: 4200, subscribers: 120, comments: 14 },
-  { name: 'Tue', views: 5800, subscribers: 142, comments: 22 },
-  { name: 'Wed', views: 9800, subscribers: 210, comments: 45 }, // Newsletter Wednesday peak
-  { name: 'Thu', views: 7600, subscribers: 180, comments: 31 },
-  { name: 'Fri', views: 6400, subscribers: 165, comments: 28 },
-  { name: 'Sat', views: 3200, subscribers: 95, comments: 12 },
-  { name: 'Sun', views: 2900, subscribers: 88, comments: 8 }
+  { name: 'Mon', views: 0, subscribers: 0, comments: 0 },
+  { name: 'Tue', views: 0, subscribers: 0, comments: 0 },
+  { name: 'Wed', views: 0, subscribers: 0, comments: 0 },
+  { name: 'Thu', views: 0, subscribers: 0, comments: 0 },
+  { name: 'Fri', views: 0, subscribers: 0, comments: 0 },
+  { name: 'Sat', views: 0, subscribers: 0, comments: 0 },
+  { name: 'Sun', views: 0, subscribers: 0, comments: 0 }
 ];
 
 export const TESTIMONIALS = [

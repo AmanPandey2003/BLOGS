@@ -28,6 +28,8 @@ interface AdminDashboardProps {
   onApproveComment: (id: string) => void;
   onDeleteComment: (id: string) => void;
   onImportSubscribers: (emails: string[]) => void;
+  trafficHistory: any[];
+  onResetTraffic: () => void;
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -43,7 +45,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   onBulkCategoryChange,
   onApproveComment,
   onDeleteComment,
-  onImportSubscribers
+  onImportSubscribers,
+  trafficHistory,
+  onResetTraffic
 }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'blogs' | 'subscribers' | 'comments' | 'security'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
@@ -252,25 +256,40 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <h3 className="text-base font-bold text-slate-900 dark:text-white">Active Traffic Progression</h3>
                   <p className="text-xs text-slate-400 font-light">Measures pageviews against subscriber sign-ups over the weekly interval.</p>
                 </div>
-                <span className="px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest bg-emerald-500/10 text-emerald-500 rounded-md">
-                  Server Live
-                </span>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={onResetTraffic}
+                    className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider bg-rose-500/10 hover:bg-rose-500/25 text-rose-500 border border-rose-500/20 rounded-md cursor-pointer transition-all active:scale-95"
+                    title="Reset Active Traffic Progression to Zero"
+                  >
+                    Reset to Zero
+                  </button>
+                  <span className="px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest bg-emerald-500/10 text-emerald-500 rounded-md">
+                    Server Live
+                  </span>
+                </div>
               </div>
 
               <div className="h-72 w-full text-xs font-sans">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={ANALYTICS_VIEWS_HISTORY} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <AreaChart data={trafficHistory} margin={{ top: 10, right: -10, left: -20, bottom: 0 }}>
                     <defs>
                       <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="var(--primary-color)" stopOpacity={0.25}/>
                         <stop offset="95%" stopColor="var(--primary-color)" stopOpacity={0}/>
                       </linearGradient>
+                      <linearGradient id="colorSubscribers" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="var(--secondary-color)" stopOpacity={0.25}/>
+                        <stop offset="95%" stopColor="var(--secondary-color)" stopOpacity={0}/>
+                      </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e4e4e7" />
-                    <XAxis dataKey="name" stroke="#a1a1aa" />
-                    <YAxis stroke="#a1a1aa" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e4e4e7" className="opacity-40 dark:opacity-10" />
+                    <XAxis dataKey="name" stroke="#a1a1aa" tickLine={false} axisLine={false} />
+                    <YAxis yAxisId="left" stroke="var(--primary-color)" tickLine={false} axisLine={false} />
+                    <YAxis yAxisId="right" orientation="right" stroke="var(--secondary-color)" tickLine={false} axisLine={false} />
                     <Tooltip contentStyle={{ background: '#18181b', borderRadius: '12px', border: '1px solid #27272a', color: '#fff' }} />
-                    <Area type="monotone" dataKey="views" stroke="var(--primary-color)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorViews)" />
+                    <Area yAxisId="left" type="monotone" name="Pageviews" dataKey="views" stroke="var(--primary-color)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorViews)" />
+                    <Area yAxisId="right" type="monotone" name="New Subscribers" dataKey="subscribers" stroke="var(--secondary-color)" strokeWidth={2.5} fillOpacity={1} fill="url(#colorSubscribers)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>

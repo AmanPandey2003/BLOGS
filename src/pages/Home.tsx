@@ -9,6 +9,11 @@ import { ArrowRight, Sparkles, BookOpen, Star, TrendingUp, Users, Calendar, Arro
 import { motion } from 'motion/react';
 import { useCustomization } from '../contexts/CustomizationContext';
 import { TESTIMONIALS } from '../data/mockData';
+import { StudyCorner, CuriositySpot, DeveloperScatteredObjects, ModernMeshBackground } from '../components/AnimeDecorations';
+import { DecorativeElements } from '../components/DecorativeElements';
+import { InteractiveHeroBackdrop, Typewriter } from '../components/InteractiveHero';
+import { BlogCard } from '../components/BlogCard';
+import { StatsSection } from '../components/StatsSection';
 
 interface HomeProps {
   blogs: Blog[];
@@ -95,15 +100,26 @@ export const Home: React.FC<HomeProps> = ({
   };
 
   return (
-    <div className="space-y-24 pb-20 overflow-hidden font-custom">
+    <div className="space-y-24 pb-20 overflow-hidden font-custom relative">
+      {/* Premium developer background mesh & Grid lines */}
+      <ModernMeshBackground />
+      {/* Floating subtle developer symbols, code, CPU, Git branch */}
+      <DeveloperScatteredObjects />
+      {/* Premium animated 3D-like floating developer elements */}
+      <DecorativeElements />
+
       {/* 1. Large Hero Section */}
       <section className="relative pt-16 pb-24 md:pt-36 md:pb-40 flex flex-col items-center text-center px-4 max-w-5xl mx-auto space-y-10">
-        {/* Apple & Vercel Spotlight Blur backdrop */}
-        <div className="absolute inset-0 -z-10 flex items-center justify-center opacity-40 pointer-events-none">
-          <div className="w-[600px] h-[600px] rounded-full bg-primary/20 blur-[130px] animate-pulse glow-spotlight" />
-          <div className="w-[400px] h-[400px] rounded-full bg-secondary/15 blur-[100px] -ml-32 glow-spotlight" />
-          <div className="w-[300px] h-[300px] rounded-full bg-accent/10 blur-[90px] ml-40 glow-spotlight" style={{ animationDelay: '2s' }} />
+        {/* Decorative Anime-Inspired Elements (Floating elegantly on the margins) */}
+        <div className="hidden xl:block absolute left-[-200px] 2xl:left-[-280px] top-1/2 -translate-y-1/2 opacity-80 dark:opacity-70 pointer-events-none transition-all duration-700 hover:scale-105 hover:opacity-100 group/corner z-10">
+          <StudyCorner />
         </div>
+        <div className="hidden xl:block absolute right-[-200px] 2xl:right-[-280px] top-1/2 -translate-y-1/2 opacity-80 dark:opacity-70 pointer-events-none transition-all duration-700 hover:scale-105 hover:opacity-100 group/curiosity z-10">
+          <CuriositySpot />
+        </div>
+
+        {/* Modern Interactive Tech Backdrop & Moving Elements with Parallax */}
+        <InteractiveHeroBackdrop />
 
         <motion.div 
           initial={{ opacity: 0, scale: 0.96, y: 10 }}
@@ -133,19 +149,21 @@ export const Home: React.FC<HomeProps> = ({
             return (
               <div className="space-y-4 max-w-4xl mx-auto flex flex-col items-center">
                 <motion.h1 
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.05]"
+                  initial={{ opacity: 0, y: 35, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.1 }}
+                  whileHover={{ scale: 1.025, y: -2 }}
+                  className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black tracking-tighter leading-[1.05] bg-gradient-to-r from-violet-600 via-fuchsia-500 to-indigo-600 dark:from-violet-400 dark:via-fuchsia-300 dark:to-indigo-400 bg-clip-text text-transparent animate-text-shimmer cursor-default select-none"
                 >
                   {part1}
                 </motion.h1>
                 
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-700 dark:text-zinc-300"
+                  initial={{ opacity: 0, y: 30, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.25 }}
+                  whileHover={{ scale: 1.025, y: -2 }}
+                  className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tighter leading-[1.1] bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 dark:from-emerald-400 dark:via-teal-300 dark:to-cyan-400 bg-clip-text text-transparent animate-text-shimmer cursor-default select-none"
                 >
                   {part2}
                 </motion.div>
@@ -154,11 +172,11 @@ export const Home: React.FC<HomeProps> = ({
                   <motion.div 
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
                     className="text-sm sm:text-base md:text-lg font-bold tracking-wider text-slate-400 dark:text-zinc-500 uppercase flex items-center gap-1.5 mt-2"
                   >
                     {prefix && <span className="lowercase italic font-serif">{prefix}</span>}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent font-black relative inline-block hover:scale-102 transition-transform normal-case">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent font-black relative inline-block hover:scale-105 transition-transform normal-case animate-pulse-slow">
                       {brandText}
                     </span>
                   </motion.div>
@@ -168,15 +186,16 @@ export const Home: React.FC<HomeProps> = ({
           } else {
             return (
               <motion.h1 
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.05] max-w-4xl"
+                initial={{ opacity: 0, y: 35, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 100, damping: 15, delay: 0.1 }}
+                whileHover={{ scale: 1.02, y: -2 }}
+                className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent animate-text-shimmer leading-[1.05] max-w-4xl cursor-default select-none"
               >
                 {rawTitle.includes('StringToTech') ? (
                   <>
                     {rawTitle.split('StringToTech')[0]}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent relative inline-block font-black hover:scale-101 transition-transform">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent relative inline-block font-black hover:scale-105 transition-transform">
                       StringToTech
                     </span>
                     {rawTitle.split('StringToTech')[1]}
@@ -189,14 +208,42 @@ export const Home: React.FC<HomeProps> = ({
           }
         })()}
 
-        <motion.p 
+        {/* Dynamic Typing Animation Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="text-base sm:text-lg md:text-xl font-medium text-slate-700 dark:text-zinc-300 font-custom tracking-tight flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 bg-white/45 dark:bg-zinc-900/30 px-6 py-3 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/40 backdrop-blur-md shadow-sm select-none"
+        >
+          <span className="text-slate-500 dark:text-zinc-400 font-mono text-sm uppercase tracking-wider">Deep Dives in:</span>
+          <Typewriter />
+        </motion.div>
+
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-base sm:text-lg md:text-xl text-slate-500 dark:text-zinc-400 font-light max-w-3xl mx-auto leading-relaxed"
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="w-full relative overflow-hidden py-3 bg-zinc-50/70 dark:bg-zinc-900/30 border-y border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl md:rounded-3xl shadow-inner select-none"
         >
-          {config.heroDescription}
-        </motion.p>
+          {/* Subtle gradient fades on side */}
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white dark:from-zinc-950 to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white dark:from-zinc-950 to-transparent z-10 pointer-events-none" />
+          
+          <div className="animate-marquee-ltr flex whitespace-nowrap gap-12">
+            <div className="flex shrink-0 items-center gap-12 px-4 text-sm md:text-base font-bold text-slate-700 dark:text-zinc-300 tracking-wide">
+              <span>{config.heroDescription}</span>
+              <span className="text-primary text-xl">•</span>
+              <span>{config.heroDescription}</span>
+              <span className="text-secondary text-xl">•</span>
+            </div>
+            <div className="flex shrink-0 items-center gap-12 px-4 text-sm md:text-base font-bold text-slate-700 dark:text-zinc-300 tracking-wide" aria-hidden="true">
+              <span>{config.heroDescription}</span>
+              <span className="text-primary text-xl">•</span>
+              <span>{config.heroDescription}</span>
+              <span className="text-secondary text-xl">•</span>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Floating Search Hub */}
         <motion.div 
@@ -441,73 +488,15 @@ export const Home: React.FC<HomeProps> = ({
         {/* Dynamic Grid */}
         {filteredLatestBlogs.length > 0 ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredLatestBlogs.map((blog) => {
-              const isBookmarked = bookmarks.includes(blog.id);
-              return (
-                <motion.div 
-                  key={blog.id}
-                  whileHover={{ y: -6, scale: 1.01 }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="flex flex-col h-full rounded-2xl bg-white/70 dark:bg-zinc-900/40 border border-zinc-200/80 dark:border-zinc-800/80 overflow-hidden shadow-sm hover:shadow-xl hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-300 relative group"
-                >
-                  {/* Blog Image */}
-                  <div 
-                    onClick={() => onNavigate('blog-detail', blog.slug)}
-                    className="aspect-video overflow-hidden bg-zinc-100 dark:bg-zinc-800 relative cursor-pointer"
-                  >
-                    <img 
-                      src={blog.coverImage} 
-                      alt={blog.title} 
-                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-104"
-                      referrerPolicy="no-referrer"
-                    />
-                    <div className="absolute top-3 left-3 flex items-center gap-2">
-                      <span className="px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-widest bg-zinc-950/80 backdrop-blur-sm text-white rounded-lg shadow-sm">
-                        {blog.category}
-                      </span>
-                    </div>
-
-                    {/* Bookmark Toggle Icon overlay */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleBookmark(blog.id);
-                      }}
-                      className="absolute top-3 right-3 p-2 rounded-xl bg-zinc-950/75 backdrop-blur-sm text-white hover:bg-zinc-900 hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                      title={isBookmarked ? 'Remove Bookmark' : 'Save Article'}
-                    >
-                      <Bookmark size={14} className={isBookmarked ? 'fill-accent text-accent' : 'text-zinc-200'} />
-                    </button>
-                  </div>
-
-                  {/* Blog Content Info */}
-                  <div className="p-5 flex flex-col flex-grow justify-between space-y-4 bg-white/40 dark:bg-transparent backdrop-blur-sm">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-zinc-500 uppercase tracking-widest font-bold">
-                        <span className="text-secondary">{blog.difficulty}</span>
-                        <span>•</span>
-                        <span>{blog.metrics.readingTime} min read</span>
-                      </div>
-                      
-                      <h4 
-                        onClick={() => onNavigate('blog-detail', blog.slug)}
-                        className="text-base font-extrabold text-slate-900 dark:text-white line-clamp-2 leading-snug hover:text-primary cursor-pointer transition-colors"
-                      >
-                        {blog.title}
-                      </h4>
-                      <p className="text-xs text-slate-500 dark:text-zinc-400 font-light line-clamp-2 leading-relaxed">
-                        {blog.subtitle}
-                      </p>
-                    </div>
-
-                    <div className="pt-4 border-t border-zinc-150 dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-slate-500 dark:text-zinc-400">
-                      <span className="font-bold text-slate-700 dark:text-zinc-300">By {blog.author.name}</span>
-                      <span>{formatDate(blog.publishedAt)}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+            {filteredLatestBlogs.map((blog) => (
+              <BlogCard
+                key={blog.id}
+                blog={blog}
+                isBookmarked={bookmarks.includes(blog.id)}
+                onToggleBookmark={onToggleBookmark}
+                onNavigate={onNavigate}
+              />
+            ))}
           </div>
         ) : (
           <div className="text-center p-12 rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-800">
@@ -609,6 +598,9 @@ export const Home: React.FC<HomeProps> = ({
           ))}
         </div>
       </section>
+
+      {/* 7.5 Animated Platform Statistics */}
+      <StatsSection />
 
       {/* 8. Newsletter Section */}
       <section className="max-w-5xl mx-auto px-4">
