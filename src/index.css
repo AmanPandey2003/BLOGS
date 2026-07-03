@@ -1,0 +1,149 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;650;700;900&family=JetBrains+Mono:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-custom: "Inter", "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-primary: var(--primary-color);
+  --color-secondary: var(--secondary-color);
+  --color-accent: var(--accent-color);
+  --color-bg-light: var(--bg-light);
+  --color-bg-dark: var(--bg-dark);
+  --color-card-light: var(--card-light);
+  --color-card-dark: var(--card-dark);
+  
+  --animate-spin-slow: spin 8s linear infinite;
+}
+
+/* Premium Vercel & Linear Grid Backdrops */
+.grid-bg-light {
+  background-image: radial-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.grid-bg-dark {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Premium Glassmorphic Layers */
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(228, 228, 231, 0.6);
+}
+
+.glass-panel-dark {
+  background: rgba(9, 9, 11, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(39, 39, 42, 0.6);
+}
+
+/* Smooth gradients and custom glow properties */
+.glow-spotlight {
+  filter: blur(120px);
+  opacity: 0.25;
+  mix-blend-mode: plus-lighter;
+}
+
+html {
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-y: scroll;
+}
+
+/* Premium Dark Wallpaper effects */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+  50% { transform: translateY(-24px) scale(1.05) rotate(3deg); }
+}
+
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+  50% { transform: translateY(24px) scale(0.96) rotate(-3deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.18; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.08); }
+}
+
+@keyframes spin-very-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-float-slow {
+  animation: float 25s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: float-reverse 30s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 15s ease-in-out infinite;
+}
+
+.animate-spin-very-slow {
+  animation: spin-very-slow 90s linear infinite;
+}
+
+.dark-wallpaper-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.dark-grid-lines {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 60%, transparent 100%);
+}
+
+.dark-dot-mesh {
+  background-size: 20px 20px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  mask-image: linear-gradient(to bottom, #000, transparent);
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(161, 161, 170, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(161, 161, 170, 0.5);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(63, 63, 70, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(63, 63, 70, 0.6);
+}

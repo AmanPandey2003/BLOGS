@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Google AI Studio App</title>
+    <script>
+      // Securely wrap window.fetch with a custom getter and setter.
+      // This prevents runtime TypeError crashes when packages attempt to write or mock window.fetch inside secure sandboxed iframe environments.
+      (function() {
+        try {
+          var originalFetch = window.fetch;
+          var customFetch = originalFetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function() {
+              return customFetch;
+            },
+            set: function(val) {
+              customFetch = val;
+            },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {
+          console.warn('[StringToTech] Failed to override window.fetch descriptor, trying fallback', e);
+          try {
+            var originalGlobalFetch = globalThis.fetch;
+            var customGlobalFetch = originalGlobalFetch;
+            Object.defineProperty(globalThis, 'fetch', {
+              get: function() {
+                return customGlobalFetch;
+              },
+              set: function(val) {
+                customGlobalFetch = val;
+              },
+              configurable: true,
+              enumerable: true
+            });
+          } catch (e2) {
+            console.error('[StringToTech] Critical: Failed to define fetch property descriptors', e2);
+          }
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,6 @@
+{
+  "name": "StringToTech",
+  "description": "Turning Complex Technology Into Simple Knowledge - Premium Technology Blog, System Architecture Platform, and Interactive Admin Console.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
