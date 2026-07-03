@@ -1,20 +1,32 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Blogs
 
-# Run and deploy your AI Studio app
+A modern technical blogging platform focused on:
 
-This contains everything you need to run your app locally.
+- Mathematics
+- Data Structures & Algorithms
+- Core Computer Science
+- Web Development
+- JavaScript
+- Artificial Intelligence
 
-View your app in AI Studio: https://ai.studio/apps/1f7c3d4c-2257-48c7-ba63-89d22cfeacc4
+## Tech Stack
 
-## Run Locally
+- React
+- Next.js
+- Tailwind CSS
+- TypeScript
 
-**Prerequisites:**  Node.js
+## Features
 
+- Responsive UI
+- Dark Mode
+- Blog Search
+- Categories
+- Markdown Support
+- Fast Performance
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Getting Started
+
+```bash
+npm install
+npm run dev
