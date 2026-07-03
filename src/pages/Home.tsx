@@ -16,9 +16,19 @@ interface HomeProps {
   bookmarks: string[];
   onToggleBookmark: (id: string) => void;
   onSubscribe: (email: string) => boolean;
+  subscribersCount?: number;
+  readersCount?: number;
 }
 
-export const Home: React.FC<HomeProps> = ({ blogs, onNavigate, bookmarks, onToggleBookmark, onSubscribe }) => {
+export const Home: React.FC<HomeProps> = ({ 
+  blogs, 
+  onNavigate, 
+  bookmarks, 
+  onToggleBookmark, 
+  onSubscribe,
+  subscribersCount = 0,
+  readersCount = 2
+}) => {
   const { config } = useCustomization();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -221,12 +231,20 @@ export const Home: React.FC<HomeProps> = ({ blogs, onNavigate, bookmarks, onTogg
           {[
             { icon: <BookOpen className="text-primary" />, value: "30+", label: "Architectural Logs" },
             { icon: <Star className="text-accent" />, value: "15+", label: "Learning Segments" },
-            { icon: <TrendingUp className="text-secondary" />, value: "2", label: "Readers Monthly" },
-            { icon: <Users className="text-emerald-500" />, value: "0", label: "Active Subscribers" }
+            { icon: <TrendingUp className="text-secondary animate-pulse" />, value: `${readersCount}`, label: "Readers Monthly", live: true },
+            { icon: <Users className="text-emerald-500" />, value: `${subscribersCount}`, label: "Active Subscribers", live: true }
           ].map((stat, i) => (
             <div key={i} className="flex flex-col items-center text-center space-y-2 py-4 hover:scale-102 transition-transform duration-300">
               <div className="p-3 rounded-2xl bg-zinc-100/65 dark:bg-zinc-900/40 text-slate-700 dark:text-zinc-300 mb-1 border border-zinc-200/20 dark:border-zinc-800/20">{stat.icon}</div>
-              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tight">{stat.value}</span>
+              <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-none tracking-tight flex items-center gap-1.5 justify-center">
+                {stat.value}
+                {stat.live && (
+                  <span className="relative flex h-2 w-2" title="Live telemetry sync active">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                )}
+              </span>
               <span className="text-[10px] sm:text-xs uppercase font-semibold text-slate-400 dark:text-zinc-500 tracking-wider">{stat.label}</span>
             </div>
           ))}

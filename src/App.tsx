@@ -96,6 +96,24 @@ const AppContent: React.FC = () => {
     return !localStorage.getItem('stringtotech_cookies_accepted');
   });
 
+  const [pageViews, setPageViews] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('stringtotech_pageviews_v3');
+      return saved ? parseInt(saved, 10) : 2;
+    } catch (e) {
+      return 2;
+    }
+  });
+
+  // Track initial page load and increment views
+  useEffect(() => {
+    setPageViews(prev => {
+      const next = prev + 1;
+      localStorage.setItem('stringtotech_pageviews_v3', next.toString());
+      return next;
+    });
+  }, []);
+
   // Back to Top button trigger
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -162,6 +180,13 @@ const AppContent: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setCurrentPage(page);
     setMobileMenuOpen(false);
+
+    // Track active navigation pageviews
+    setPageViews(prev => {
+      const next = prev + 1;
+      localStorage.setItem('stringtotech_pageviews_v3', next.toString());
+      return next;
+    });
 
     if (slug) {
       setCurrentSlug(slug);
@@ -552,6 +577,8 @@ const AppContent: React.FC = () => {
             bookmarks={bookmarks}
             onToggleBookmark={handleToggleBookmark}
             onSubscribe={handleSubscribe}
+            subscribersCount={subscribers.length}
+            readersCount={pageViews}
           />
         )}
 
