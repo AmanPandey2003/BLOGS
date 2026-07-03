@@ -32,33 +32,63 @@ const AppContent: React.FC = () => {
   
   // Database mock states stored locally so they persist between views
   const [blogs, setBlogs] = useState<Blog[]>(() => {
-    const saved = localStorage.getItem('stringtotech_blogs');
-    return saved ? JSON.parse(saved) : INITIAL_BLOGS;
+    try {
+      const saved = localStorage.getItem('stringtotech_blogs');
+      return saved ? JSON.parse(saved) : INITIAL_BLOGS;
+    } catch (e) {
+      console.error("Failed to parse blogs from localStorage", e);
+      return INITIAL_BLOGS;
+    }
   });
 
   const [comments, setComments] = useState<Comment[]>(() => {
-    const saved = localStorage.getItem('stringtotech_comments');
-    return saved ? JSON.parse(saved) : INITIAL_COMMENTS;
+    try {
+      const saved = localStorage.getItem('stringtotech_comments');
+      return saved ? JSON.parse(saved) : INITIAL_COMMENTS;
+    } catch (e) {
+      console.error("Failed to parse comments from localStorage", e);
+      return INITIAL_COMMENTS;
+    }
   });
 
   const [bookmarks, setBookmarks] = useState<string[]>(() => {
-    const saved = localStorage.getItem('stringtotech_bookmarks');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('stringtotech_bookmarks');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to parse bookmarks from localStorage", e);
+      return [];
+    }
   });
 
   const [readingHistory, setReadingHistory] = useState<ReadingHistoryItem[]>(() => {
-    const saved = localStorage.getItem('stringtotech_reading_history');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('stringtotech_reading_history');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to parse reading history from localStorage", e);
+      return [];
+    }
   });
 
   const [subscribers, setSubscribers] = useState<Subscriber[]>(() => {
-    const saved = localStorage.getItem('stringtotech_subscribers');
-    return saved ? JSON.parse(saved) : INITIAL_SUBSCRIBERS;
+    try {
+      const saved = localStorage.getItem('stringtotech_subscribers');
+      return saved ? JSON.parse(saved) : INITIAL_SUBSCRIBERS;
+    } catch (e) {
+      console.error("Failed to parse subscribers from localStorage", e);
+      return INITIAL_SUBSCRIBERS;
+    }
   });
 
   const [likedBlogs, setLikedBlogs] = useState<string[]>(() => {
-    const saved = localStorage.getItem('stringtotech_liked_blogs');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('stringtotech_liked_blogs');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to parse liked blogs from localStorage", e);
+      return [];
+    }
   });
 
   // Cookie consent states

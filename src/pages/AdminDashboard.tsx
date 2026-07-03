@@ -50,8 +50,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   
   // Security log list
   const [securityLogs, setSecurityLogs] = useState<any[]>(() => {
-    const saved = localStorage.getItem('stringtotech_security_logs');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('stringtotech_security_logs');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to parse security logs in admin dashboard", e);
+      return [];
+    }
   });
 
   const handleClearSecurityLogs = () => {

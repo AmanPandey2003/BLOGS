@@ -43,8 +43,13 @@ export const AdminAuthGate: React.FC<AdminAuthGateProps> = ({ children, onNaviga
 
   // Security Logs
   const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>(() => {
-    const saved = localStorage.getItem('stringtotech_security_logs');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('stringtotech_security_logs');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error("Failed to parse security logs", e);
+      return [];
+    }
   });
 
   const saveLog = (status: 'SUCCESS' | 'FAILED' | 'SETUP', attempted?: string) => {
