@@ -33,7 +33,7 @@ const AppContent: React.FC = () => {
   // Database mock states stored locally so they persist between views
   const [blogs, setBlogs] = useState<Blog[]>(() => {
     try {
-      const saved = localStorage.getItem('stringtotech_blogs');
+      const saved = localStorage.getItem('stringtotech_blogs_v2');
       return saved ? JSON.parse(saved) : INITIAL_BLOGS;
     } catch (e) {
       console.error("Failed to parse blogs from localStorage", e);
@@ -73,7 +73,7 @@ const AppContent: React.FC = () => {
 
   const [subscribers, setSubscribers] = useState<Subscriber[]>(() => {
     try {
-      const saved = localStorage.getItem('stringtotech_subscribers');
+      const saved = localStorage.getItem('stringtotech_subscribers_v2');
       return saved ? JSON.parse(saved) : INITIAL_SUBSCRIBERS;
     } catch (e) {
       console.error("Failed to parse subscribers from localStorage", e);
@@ -102,7 +102,7 @@ const AppContent: React.FC = () => {
 
   // Synchronize dynamic updates back to local Storage
   useEffect(() => {
-    localStorage.setItem('stringtotech_blogs', JSON.stringify(blogs));
+    localStorage.setItem('stringtotech_blogs_v2', JSON.stringify(blogs));
   }, [blogs]);
 
   useEffect(() => {
@@ -118,7 +118,7 @@ const AppContent: React.FC = () => {
   }, [readingHistory]);
 
   useEffect(() => {
-    localStorage.setItem('stringtotech_subscribers', JSON.stringify(subscribers));
+    localStorage.setItem('stringtotech_subscribers_v2', JSON.stringify(subscribers));
   }, [subscribers]);
 
   useEffect(() => {

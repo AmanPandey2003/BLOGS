@@ -282,7 +282,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-zinc-50 dark:border-zinc-850/50 pb-1">Activity Log</h4>
                 <div className="space-y-4">
                   {[
-                    { action: 'Sarah Chen published RSA guide', time: '2 hours ago', icon: <Sparkles className="text-primary shrink-0" size={14} /> },
+                    { action: 'AMAN KUMAR PANDEY published RSA guide', time: '2 hours ago', icon: <Sparkles className="text-primary shrink-0" size={14} /> },
                     { action: 'New comment approved on Node Clusters', time: '4 hours ago', icon: <MessageSquare className="text-secondary shrink-0" size={14} /> },
                     { action: 'Subscribers database backup completed', time: '1 day ago', icon: <RefreshCw className="text-emerald-500 shrink-0" size={14} /> },
                     { action: 'Newsletter weekly bundle scheduled', time: '2 days ago', icon: <Send className="text-accent shrink-0" size={14} /> }

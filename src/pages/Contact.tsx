@@ -172,29 +172,8 @@ export const Contact: React.FC = () => {
           )}
         </div>
 
-        {/* Right Info Sidebar (Coordinates, FAQ, Mock Map!) */}
+        {/* Right Info Sidebar (FAQ, Mock Map!) */}
         <div className="lg:col-span-5 space-y-8">
-          {/* Coordinates info cards */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-5">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b pb-1">Primary Node Coordinates</h4>
-            
-            <div className="space-y-4">
-              {[
-                { label: 'Secure Support Mail', val: 'support@stringtotech.com', icon: <Mail className="text-primary shrink-0" size={16} /> },
-                { label: 'Global Headquarters', val: '300 Sand Hill Road, Menlo Park, CA', icon: <MapPin className="text-secondary shrink-0" size={16} /> },
-                { label: 'Platform Hotline', val: '+1 (555) 300-TECHS', icon: <Phone className="text-accent shrink-0" size={16} /> }
-              ].map((coor, i) => (
-                <div key={i} className="flex gap-3.5 items-start">
-                  <div className="p-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-950 border">{coor.icon}</div>
-                  <div className="space-y-0.5">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">{coor.label}</span>
-                    <span className="text-xs font-bold text-slate-700 dark:text-zinc-200 block">{coor.val}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Premium Abstract Map Placeholder */}
           <div className="rounded-3xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative aspect-video bg-zinc-950 flex items-center justify-center text-center p-6 select-none group shadow-sm">
             <div className="absolute inset-0 opacity-15 grid grid-cols-12 gap-1.5 p-3 font-mono text-[9px] text-white">
@@ -224,7 +203,7 @@ export const Contact: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-8">
           {[
             { q: 'Is the StringToTech documentation open-source?', a: 'Yes! All written architectural guides, system drawings, and benchmark script files are licensed under Apache 2.0. Feel free to cite or fork them.' },
-            { q: 'How do I submit security vulnerability audits?', a: 'Please select "Security Audit / Vulnerability Report" in our Transmission form. This routes message payloads straight to Marcus Vance (CSO) via private PGP keys.' },
+            { q: 'How do I submit security vulnerability audits?', a: 'Please select "Security Audit / Vulnerability Report" in our Transmission form. This routes message payloads straight to AMAN KUMAR PANDEY via private PGP keys.' },
             { q: 'Do you support commercial sponsorships?', a: 'We accept sponsorships from technology brands providing dev-focused compilers, cloud architectures, or database engines that match our core values.' },
             { q: 'Can I write a guest log for StringToTech?', a: 'Yes! Guest authors must present strong credentials, verified GitHub repository commits, or professional engineering backgrounds.' }
           ].map((faq, i) => (

@@ -190,10 +190,10 @@ export const AdminEditor: React.FC<AdminEditorProps> = ({
       updatedAt: new Date().toISOString(),
       metrics: originalBlog ? originalBlog.metrics : { views: 0, likes: 0, readingTime: editorStats.readingTime },
       author: originalBlog ? originalBlog.author : {
-        name: 'Sarah Chen',
-        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop',
-        role: 'Lead Frontend Architect',
-        bio: 'Sarah is an active open-source contributor, specialized in modern React performance architectures.'
+        name: 'AMAN KUMAR PANDEY',
+        avatar: '/aman.svg',
+        role: 'LEARNING WRITING BUILDING',
+        bio: 'I believe great learning should be simple and accessible. Through this blog, I share my journey, break down complex Computer Science concepts, and create practical content that helps others learn, build, and grow.'
       },
       seo: {
         metaTitle: title + ' | StringToTech',

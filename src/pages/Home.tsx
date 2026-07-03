@@ -221,8 +221,8 @@ export const Home: React.FC<HomeProps> = ({ blogs, onNavigate, bookmarks, onTogg
           {[
             { icon: <BookOpen className="text-primary" />, value: "30+", label: "Architectural Logs" },
             { icon: <Star className="text-accent" />, value: "15+", label: "Learning Segments" },
-            { icon: <TrendingUp className="text-secondary" />, value: "140K+", label: "Readers Monthly" },
-            { icon: <Users className="text-emerald-500" />, value: "10K+", label: "Active Subscribers" }
+            { icon: <TrendingUp className="text-secondary" />, value: "2", label: "Readers Monthly" },
+            { icon: <Users className="text-emerald-500" />, value: "0", label: "Active Subscribers" }
           ].map((stat, i) => (
             <div key={i} className="flex flex-col items-center text-center space-y-2 py-4 hover:scale-102 transition-transform duration-300">
               <div className="p-3 rounded-2xl bg-zinc-100/65 dark:bg-zinc-900/40 text-slate-700 dark:text-zinc-300 mb-1 border border-zinc-200/20 dark:border-zinc-800/20">{stat.icon}</div>
@@ -550,55 +550,41 @@ export const Home: React.FC<HomeProps> = ({ blogs, onNavigate, bookmarks, onTogg
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
         <div className="text-center space-y-1">
           <h3 className="text-2xl font-black text-slate-900 dark:text-white font-custom">
-            The StringToTech Architecture Guild
+            The Creator of StringToTech
           </h3>
           <p className="text-sm text-slate-500 dark:text-zinc-400 font-light max-w-lg mx-auto">
-            Meet the principal engineers and designers building open-source systems and compiling complex theories into clean knowledge.
+            Meet the developer and writer building open-source systems and compiling complex Computer Science theories into simple knowledge.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="flex justify-center">
           {[
             {
-              name: 'Anish Kumar',
-              role: 'Principal Platform Engineer',
-              avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=250&auto=format&fit=crop',
-              skills: ['Distributed Systems', 'C++', 'NodeJS', 'Linux Kernels'],
-              bio: 'Anish designs high-throughput microservices and leads developer platform engineering at StringToTech.'
-            },
-            {
-              name: 'Sarah Chen',
-              role: 'Lead Frontend Architect',
-              avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=250&auto=format&fit=crop',
-              skills: ['React Internals', 'V8 Engine', 'WebAssembly', 'Tailwind'],
-              bio: 'Sarah is an active open-source contributor, specialized in modern React performance architectures.'
-            },
-            {
-              name: 'Marcus Vance',
-              role: 'Chief Security Officer',
-              avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=250&auto=format&fit=crop',
-              skills: ['RSA Math', 'OAuth Protocols', 'Zero-Trust Systems', 'Go'],
-              bio: 'Marcus focuses on infrastructure compliance, cryptography, and server penetration auditing.'
+              name: 'AMAN KUMAR PANDEY',
+              role: 'LEARNING WRITING BUILDING',
+              avatar: '/aman.svg',
+              skills: ['Mathematics', 'Computer Science', 'Software Engineering', 'Artificial Intelligence'],
+              bio: 'I believe great learning should be simple and accessible. Through this blog, I share my journey, break down complex Computer Science concepts, and create practical content that helps others learn, build, and grow.'
             }
           ].map((author, idx) => (
             <div 
               key={idx}
-              className="p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-5 hover:shadow-md transition-shadow cursor-pointer"
+              className="w-full max-w-2xl p-6 md:p-8 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-5 hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => onNavigate('author')}
             >
-              <div className="flex items-center gap-4">
-                <img src={author.avatar} alt={author.name} className="w-14 h-14 rounded-full object-cover border border-zinc-150 dark:border-zinc-800" referrerPolicy="no-referrer" />
+              <div className="flex flex-col sm:flex-row items-center gap-5 text-center sm:text-left">
+                <img src={author.avatar} alt={author.name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/20 p-1" referrerPolicy="no-referrer" />
                 <div>
-                  <h4 className="font-bold text-slate-900 dark:text-white">{author.name}</h4>
-                  <p className="text-[11px] text-slate-400 font-medium">{author.role}</p>
+                  <h4 className="text-lg font-black text-slate-900 dark:text-white">{author.name}</h4>
+                  <p className="text-xs text-primary font-bold tracking-wider uppercase">{author.role}</p>
                 </div>
               </div>
-              <p className="text-xs text-slate-600 dark:text-zinc-400 font-light leading-relaxed">{author.bio}</p>
+              <p className="text-sm text-slate-600 dark:text-zinc-400 font-light leading-relaxed">{author.bio}</p>
               
               {/* Skill Badges */}
-              <div className="flex flex-wrap gap-1.5 pt-2">
+              <div className="flex flex-wrap gap-1.5 pt-2 justify-center sm:justify-start">
                 {author.skills.map(s => (
-                  <span key={s} className="px-2 py-0.5 text-[9px] font-semibold bg-primary/5 text-primary rounded border border-primary/10">{s}</span>
+                  <span key={s} className="px-3 py-1 text-[10px] font-bold bg-primary/5 text-primary rounded-xl border border-primary/10">{s}</span>
                 ))}
               </div>
             </div>
@@ -643,42 +629,69 @@ export const Home: React.FC<HomeProps> = ({ blogs, onNavigate, bookmarks, onTogg
         </div>
       </section>
 
-      {/* 9. Testimonials & Industry Feedback */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        <div className="text-center space-y-1">
-          <h3 className="text-2xl font-black text-slate-900 dark:text-white font-custom tracking-tight">
-            Approved by Tech Architects
-          </h3>
-          <p className="text-sm text-slate-500 dark:text-zinc-400 font-light">See what leading software creators think of StringToTech.</p>
-        </div>
+      {/* 10. Technology Stack Showcase - Animated Philosophy Block */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-zinc-150 dark:border-zinc-850 pt-16 text-center">
+        <div className="py-12 px-6 rounded-3xl bg-zinc-50 dark:bg-zinc-900/20 border border-zinc-200/50 dark:border-zinc-800/60 relative overflow-hidden flex flex-col items-center justify-center min-h-[180px]">
+          {/* Subtle background glow */}
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-64 h-64 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10 rounded-full blur-3xl pointer-events-none" />
+          
+          <div className="flex flex-col items-center justify-center space-y-5 max-w-3xl relative z-10">
+            {/* Animated Symbol */}
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+              className="text-primary/75"
+            >
+              <Sparkles size={20} />
+            </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {TESTIMONIALS.map((test, idx) => (
-            <div key={idx} className="p-6 rounded-3xl bg-white/40 dark:bg-zinc-900/15 border border-zinc-200/60 dark:border-zinc-800/80 backdrop-blur-md shadow-sm flex flex-col justify-between space-y-5 hover:border-zinc-300 dark:hover:border-zinc-700 hover:scale-101 transition-all duration-300">
-              <p className="text-xs md:text-sm text-slate-600 dark:text-zinc-300 font-light italic leading-relaxed">
-                "{test.content}"
-              </p>
-              <div className="flex items-center gap-3">
-                <img src={test.avatar} alt={test.name} className="w-8 h-8 rounded-full object-cover border border-zinc-200/50" referrerPolicy="no-referrer" />
-                <div>
-                  <h5 className="text-[11px] font-bold text-slate-800 dark:text-zinc-200 leading-none">{test.name}</h5>
-                  <span className="text-[9px] text-slate-400 mt-0.5 block">{test.role}</span>
-                </div>
-              </div>
+            {/* Main animated text */}
+            <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 md:gap-x-2.5 text-base sm:text-lg md:text-xl font-bold font-custom tracking-tight px-4 leading-relaxed">
+              {["-", "SIMPLIFIED", "MATHEMATICS", "AND", "COMPUTER", "SCIENCE", "WITH", "LITTLE", "BIT", "OF", "PRODUCTIVITY", "TIPS", "-"].map((word, wordIdx) => {
+                // Determine highlight color classes for core topics
+                let colorClass = "text-slate-800 dark:text-zinc-200";
+                if (word === "MATHEMATICS") {
+                  colorClass = "bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400 font-extrabold";
+                } else if (word === "COMPUTER" || word === "SCIENCE") {
+                  colorClass = "bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 font-extrabold";
+                } else if (word === "PRODUCTIVITY" || word === "TIPS") {
+                  colorClass = "bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-amber-500 dark:from-rose-400 dark:to-amber-400 font-extrabold";
+                } else if (word === "-") {
+                  colorClass = "text-primary/75 dark:text-primary/75 font-black";
+                }
+
+                return (
+                  <motion.span
+                    key={wordIdx}
+                    className={`inline-block ${colorClass}`}
+                    animate={{
+                      y: [0, -4, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: wordIdx * 0.15,
+                    }}
+                    whileHover={{
+                      scale: 1.1,
+                      rotate: wordIdx % 2 === 0 ? 1 : -1,
+                      transition: { duration: 0.15 }
+                    }}
+                  >
+                    {word}
+                  </motion.span>
+                );
+              })}
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* 10. Technology Stack Showcase */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-zinc-150 dark:border-zinc-850 pt-16 text-center space-y-6">
-        <span className="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-zinc-500 block">OUR CORE PLATFORM ENGINE COVERS</span>
-        <div className="flex flex-wrap justify-center gap-6 md:gap-12 items-center opacity-45 hover:opacity-80 transition-opacity duration-300">
-          {['React', 'NextJS', 'TypeScript', 'Tailwind', 'NodeJS', 'Express', 'MongoDB', 'Docker', 'AWS'].map((tech) => (
-            <span key={tech} className="text-lg md:text-2xl font-black font-custom text-slate-600 dark:text-zinc-300 tracking-tight select-none">
-              {tech}
-            </span>
-          ))}
+            {/* Pulse Line */}
+            <motion.div 
+              animate={{ width: ["40px", "120px", "40px"] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="h-0.5 bg-gradient-to-r from-primary/30 via-secondary/60 to-accent/30 rounded-full"
+            />
+          </div>
         </div>
       </section>
 

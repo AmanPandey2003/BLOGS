@@ -28,46 +28,19 @@ interface AuthorDetails {
 
 const AUTHORS: AuthorDetails[] = [
   {
-    name: 'Sarah Chen',
-    role: 'Lead Frontend Architect',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=250&auto=format&fit=crop',
+    name: 'AMAN KUMAR PANDEY',
+    role: 'LEARNING WRITING BUILDING',
+    avatar: '/aman.svg',
     joined: 'Jan 2025',
-    github: 'https://github.com/schen-dev',
-    twitter: 'https://twitter.com/schen_tweets',
-    skills: ['React Internals', 'WebAssembly', 'V8 Optimization', 'CSS Engine Spec'],
-    stats: { totalPosts: 12, views: '55K', rating: '4.9/5' },
-    bio: 'Sarah Chen is an active open-source contributor and speaker. Before founding StringToTech, she optimized runtime layouts for leading cloud providers and researched virtual machine interpreters.',
+    github: 'https://github.com/aman-pandeysuri',
+    twitter: 'https://twitter.com/amanpandeysuri',
+    skills: ['Mathematics', 'Computer Science', 'Software Engineering', 'Artificial Intelligence'],
+    stats: { totalPosts: 30, views: '2', rating: '4.9/5' },
+    bio: 'I believe great learning should be simple and accessible. Through this blog, I share my journey, break down complex Computer Science concepts, and create practical content that helps others learn, build, and grow.',
     recentBooks: [
       { title: 'Deconstructing React Internals', publisher: 'StringToTech Pubs', year: '2025' },
-      { title: 'The Assembly Handbook for JS Devs', publisher: 'O Reilly Media', year: '2024' }
-    ]
-  },
-  {
-    name: 'Anish Kumar',
-    role: 'Principal Platform Engineer',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=250&auto=format&fit=crop',
-    joined: 'Jan 2025',
-    github: 'https://github.com/akumar-platform',
-    twitter: 'https://twitter.com/akumar_codes',
-    skills: ['Distributed Systems', 'C++ Compilers', 'Linux Kernels', 'Node.js Core'],
-    stats: { totalPosts: 10, views: '62K', rating: '4.8/5' },
-    bio: 'Anish is a systems architect designing high-throughput data layers. He enjoys debugging Linux kernel memory leaks, tweaking garbage collectors, and profiling low-latency socket endpoints.',
-    recentBooks: [
+      { title: 'The Assembly Handbook for JS Devs', publisher: 'O Reilly Media', year: '2024' },
       { title: 'Distributed Mutexes and Consensus', publisher: 'StringToTech Pubs', year: '2025' },
-      { title: 'Linux System Audits', publisher: 'Manning', year: '2023' }
-    ]
-  },
-  {
-    name: 'Marcus Vance',
-    role: 'Chief Security Officer',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=250&auto=format&fit=crop',
-    joined: 'Feb 2025',
-    github: 'https://github.com/marcus-security',
-    twitter: 'https://twitter.com/marcus_audit',
-    skills: ['RSA Cryptography', 'OAuth Protocols', 'Zero-Trust Networks', 'Go Routines'],
-    stats: { totalPosts: 8, views: '28K', rating: '4.7/5' },
-    bio: 'Marcus Vance leads compliance, intrusion audits, and cryptography strategies. He is committed to teaching zero-trust engineering models and auditing open-source OAuth standards.',
-    recentBooks: [
       { title: 'Zero-Trust Architectures in Go', publisher: 'StringToTech Pubs', year: '2025' }
     ]
   }
@@ -94,22 +67,24 @@ export const AuthorProfile: React.FC<AuthorProfileProps> = ({ blogs, onNavigate 
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-12 font-custom select-text pb-20">
       
       {/* Authors Selector tabs */}
-      <div className="flex flex-wrap gap-2.5 justify-center border-b pb-5">
-        {AUTHORS.map((auth) => (
-          <button
-            key={auth.name}
-            onClick={() => setActiveAuthorName(auth.name)}
-            className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
-              activeAuthorName === auth.name 
-                ? 'bg-primary text-white shadow-md' 
-                : 'bg-zinc-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800'
-            }`}
-          >
-            <img src={auth.avatar} alt={auth.name} className="w-5 h-5 rounded-full object-cover" referrerPolicy="no-referrer" />
-            <span>{auth.name}</span>
-          </button>
-        ))}
-      </div>
+      {AUTHORS.length > 1 && (
+        <div className="flex flex-wrap gap-2.5 justify-center border-b pb-5">
+          {AUTHORS.map((auth) => (
+            <button
+              key={auth.name}
+              onClick={() => setActiveAuthorName(auth.name)}
+              className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                activeAuthorName === auth.name 
+                  ? 'bg-primary text-white shadow-md' 
+                  : 'bg-zinc-100 dark:bg-zinc-900 text-slate-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800'
+              }`}
+            >
+              <img src={auth.avatar} alt={auth.name} className="w-5 h-5 rounded-full object-cover" referrerPolicy="no-referrer" />
+              <span>{auth.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-12 gap-12 items-start">
         {/* Left column: Author Bio and publications */}
