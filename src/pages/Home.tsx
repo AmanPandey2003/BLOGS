@@ -600,7 +600,7 @@ export const Home: React.FC<HomeProps> = ({
       </section>
 
       {/* 7.5 Animated Platform Statistics */}
-      <StatsSection />
+      <StatsSection blogs={blogs} />
 
       {/* 8. Newsletter Section */}
       <section className="max-w-5xl mx-auto px-4">
